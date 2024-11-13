@@ -12,7 +12,7 @@ from datetime import datetime
 
 # Función para cargar los datos desde PostgreSQL
 async def cargar_datos():
-    conn = await asyncpg.connect(user='postgres', password='1234', database='DbUrbanGuard', host='127.0.0.1')
+    conn = await asyncpg.connect(user='bd_urbanguard_user', password='hrnattcH3zMb829VjEwIlJEBWRBuKCq5', database='bd_urbanguard', host='dpg-csq2vk9u0jms73fmfg70-a.oregon-postgres.render.com')
 
     # Cargar los datos de la tabla incidentes
     df = await conn.fetch("SELECT * FROM incidentes")

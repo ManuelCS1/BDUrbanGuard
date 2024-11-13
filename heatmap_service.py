@@ -2,7 +2,7 @@ import asyncpg
 import asyncio
 
 async def cargar_datos_heatmap():
-    conn = await asyncpg.connect(user='postgres', password='1234', database='DbUrbanGuard', host='127.0.0.1')
+    conn = await asyncpg.connect(user='bd_urbanguard_user', password='hrnattcH3zMb829VjEwIlJEBWRBuKCq5', database='bd_urbanguard', host='dpg-csq2vk9u0jms73fmfg70-a.oregon-postgres.render.com')
 
     # Consulta para obtener los datos necesarios para el heatmap
     query = "SELECT latitud_denuncia, longitud_denuncia, sub_tipo FROM incidentes"

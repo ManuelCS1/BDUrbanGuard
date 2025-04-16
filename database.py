@@ -7,7 +7,6 @@ from sklearn.preprocessing import LabelEncoder
 from joblib import dump
 from geopy.distance import geodesic
 import numpy as np
-from datetime import datetime
 
 # Función para cargar datos desde PostgreSQL usando asyncpg
 async def cargar_datos():

@@ -12,7 +12,10 @@ from datetime import datetime
 
 # Función para cargar los datos desde PostgreSQL
 async def cargar_datos():
-    conn = await asyncpg.connect(user='bd_urbanguard_user', password='hrnattcH3zMb829VjEwIlJEBWRBuKCq5', database='bd_urbanguard', host='dpg-csq2vk9u0jms73fmfg70-a.oregon-postgres.render.com')
+    conn = await asyncpg.connect(user='bd_urbanguard_user',
+                                 password='hrnattcH3zMb829VjEwIlJEBWRBuKCq5',
+                                 database='bd_urbanguard',
+                                 host='dpg-csq2vk9u0jms73fmfg70-a.oregon-postgres.render.com')
 
     # Cargar los datos de la tabla incidentes
     df = await conn.fetch("SELECT * FROM incidentes")
@@ -57,7 +60,8 @@ async def entrenar_modelo():
     ), axis=1)
 
     # Características de entrada (usamos 'hora_hecho' directamente)
-    X = df[['latitud_denuncia', 'longitud_denuncia', 'mes', 'hora_hecho', 'dia_semana', 'distancia_comisaria', 'distrito']]
+    X = df[['latitud_denuncia', 'longitud_denuncia', 'mes',
+            'hora_hecho', 'dia_semana', 'distancia_comisaria', 'distrito']]
     y = df['sub_tipo']
 
     # Dividir en conjunto de entrenamiento y prueba
@@ -66,6 +70,8 @@ async def entrenar_modelo():
     # Modelo Random Forest con pesos balanceados
     model = RandomForestClassifier(n_estimators=50, max_depth=10, class_weight='balanced', random_state=42)
     model.fit(X_train, y_train)
+
+
 
     # Evaluación del modelo: Accuracy
     y_pred_train = model.predict(X_train)
@@ -76,7 +82,8 @@ async def entrenar_modelo():
 
     # Mostrar la importancia de las características (variables)
     feature_importances = model.feature_importances_
-    features = ['latitud_denuncia', 'longitud_denuncia', 'mes', 'hora_hecho', 'dia_semana', 'distancia_comisaria', 'distrito']
+    features = ['latitud_denuncia', 'longitud_denuncia', 'mes', 'hora_hecho',
+                'dia_semana', 'distancia_comisaria', 'distrito']
 
     # Guardar el modelo entrenado
     dump(model, 'random_forest_model.joblib')
@@ -110,7 +117,7 @@ def predecir(modelo, latitud, longitud, hora, label_encoder_subtipo):
 # Entrenamiento y predicción
 model, label_encoder_subtipo = asyncio.run(entrenar_modelo())
 
-# Solicitar solo 3 inputs al usuario
+# Solicitud de 3 inputs al usuario
 latitud = float(input("Ingresa la latitud: "))
 longitud = float(input("Ingresa la longitud: "))
 hora = int(input("Ingresa la hora (en formato militar, ej. 1300 para 13:00): "))

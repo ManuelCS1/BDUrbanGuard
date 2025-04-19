@@ -60,6 +60,11 @@ def obtener_datos_heatmap():
 @app.route('/usuarios/registro', methods=['POST'])
 def registrar_usuario():
     data = request.get_json()
+    # Validación básica
+    for campo in ['nombre', 'correo', 'contrasena', 'celular']:
+        if not data.get(campo):
+            return {"error": f"El campo {campo} es obligatorio"}, 400
+
     async def _register():
         conn = await get_conn()
         try:
@@ -68,8 +73,17 @@ def registrar_usuario():
                 data['nombre'], data['correo'], data['contrasena'], data['celular']
             )
             return {"mensaje": "Usuario registrado exitosamente"}
-        except asyncpg.UniqueViolationError:
-            return {"error": "Correo ya registrado"}, 400
+        except asyncpg.exceptions.UniqueViolationError as e:
+            error_msg = str(e)
+            if 'correo' in error_msg:
+                return {"error": "Correo ya registrado"}, 400
+            elif 'celular' in error_msg:
+                return {"error": "Celular ya registrado"}, 400
+            else:
+                return {"error": "Correo o celular ya registrado"}, 400
+        except Exception as e:
+            print("Error en registro:", e)
+            return {"error": f"Error interno del servidor: {str(e)}"}, 500
         finally:
             await conn.close()
     return asyncio.run(_register())

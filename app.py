@@ -64,8 +64,8 @@ def registrar_usuario():
         conn = await get_conn()
         try:
             await conn.execute(
-                "INSERT INTO usuarios (nombre, correo, contrasena, foto_url) VALUES ($1, $2, $3, $4)",
-                data['nombre'], data['correo'], data['contrasena'], data.get('foto_url')
+                "INSERT INTO usuarios (nombre, correo, contrasena, celular) VALUES ($1, $2, $3, $4)",
+                data['nombre'], data['correo'], data['contrasena'], data['celular']
             )
             return {"mensaje": "Usuario registrado exitosamente"}
         except asyncpg.UniqueViolationError:
@@ -80,7 +80,7 @@ def login_usuario():
     async def _login():
         conn = await get_conn()
         usuario = await conn.fetchrow(
-            "SELECT id, nombre, correo, foto_url FROM usuarios WHERE correo=$1 AND contrasena=$2",
+            "SELECT id, nombre, correo, celular FROM usuarios WHERE correo=$1 AND contrasena=$2",
             data['correo'], data['contrasena']
         )
         await conn.close()
@@ -111,7 +111,7 @@ def obtener_usuario(usuario_id):
     async def _get():
         conn = await get_conn()
         usuario = await conn.fetchrow(
-            "SELECT id, nombre, correo, foto_url FROM usuarios WHERE id=$1", usuario_id
+            "SELECT id, nombre, correo, celular FROM usuarios WHERE id=$1", usuario_id
         )
         await conn.close()
         if usuario:

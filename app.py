@@ -110,14 +110,25 @@ def recuperar_contrasena():
     async def _recuperar():
         conn = await get_conn()
         usuario = await conn.fetchrow(
-            "SELECT id FROM usuarios WHERE correo=$1",
-            data['correo']
+            "SELECT id FROM usuarios WHERE correo=$1 AND celular=$2",
+            data['correo'], data['celular']
         )
-        await conn.close()
-        if usuario:
-            return {"mensaje": "Instrucciones enviadas al correo"}
+        if not usuario:
+            await conn.close()
+            return {"error": "Datos incorrectos"}, 404
+
+        # Si viene nueva contraseña, actualiza
+        if 'nueva_contrasena' in data:
+            await conn.execute(
+                "UPDATE usuarios SET contrasena=$1 WHERE id=$2",
+                data['nueva_contrasena'], usuario['id']
+            )
+            await conn.close()
+            return {"mensaje": "Contraseña actualizada correctamente"}
         else:
-            return {"error": "Correo no registrado"}, 404
+            await conn.close()
+            return {"mensaje": "Datos verificados, puede cambiar la contraseña"}
+
     return asyncio.run(_recuperar())
 
 @app.route('/usuarios/<int:usuario_id>', methods=['GET'])

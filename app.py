@@ -179,6 +179,7 @@ def obtener_rutas_usuario(usuario_id):
     return jsonify(asyncio.run(_get()))
 
 # --- ENDPOINTS CONTACTOS DE EMERGENCIA ---
+
 @app.route('/contactos', methods=['POST'])
 def agregar_contacto():
     data = request.get_json()
@@ -200,6 +201,30 @@ def obtener_contactos(usuario_id):
         await conn.close()
         return [dict(c) for c in contactos]
     return jsonify(asyncio.run(_get()))
+
+@app.route('/contactos/<int:contacto_id>', methods=['PUT'])
+def modificar_contacto(contacto_id):
+    data = request.get_json()
+    async def _update():
+        conn = await get_conn()
+        await conn.execute(
+            "UPDATE contactos_emergencia SET nombre=$1, telefono=$2 WHERE id=$3",
+            data['nombre'], data['telefono'], contacto_id
+        )
+        await conn.close()
+        return {"mensaje": "Contacto modificado"}
+    return asyncio.run(_update())
+
+@app.route('/contactos/<int:contacto_id>', methods=['DELETE'])
+def eliminar_contacto(contacto_id):
+    async def _delete():
+        conn = await get_conn()
+        await conn.execute(
+            "DELETE FROM contactos_emergencia WHERE id=$1", contacto_id
+        )
+        await conn.close()
+        return {"mensaje": "Contacto eliminado"}
+    return asyncio.run(_delete())
 
 # --- ENDPOINTS CONSEJOS DE SEGURIDAD ---
 @app.route('/consejos', methods=['POST'])

@@ -47,6 +47,15 @@ async def create_all_tables():
             calificacion INTEGER,
             comentario TEXT
         );
+        CREATE TABLE IF NOT EXISTS reportes_incidentes (
+            id SERIAL PRIMARY KEY,
+            usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+            tipo_incidente VARCHAR(50) NOT NULL,
+            latitud VARCHAR(20),
+            longitud VARCHAR(20),
+            descripcion TEXT,
+            fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
     ''')
     await conn.close()
 

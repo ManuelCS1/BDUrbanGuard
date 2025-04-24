@@ -247,5 +247,43 @@ def obtener_calificaciones(ruta_id):
         return [dict(c) for c in calificaciones]
     return jsonify(asyncio.run(_get()))
 
+
+# ---------- ENDPOINTS REPORTES DE INCIDENTES ----------
+TIPOS_VALIDOS = {'homicidio', 'robo', 'hurto', 'violacion'}
+
+@app.route('/reportes', methods=['POST'])
+def crear_reporte():
+    data = request.get_json()
+    for campo in ['usuario_id', 'tipo_incidente', 'latitud', 'longitud', 'descripcion']:
+        if not data.get(campo):
+            return {"error": f"El campo {campo} es obligatorio"}, 400
+    if data['tipo_incidente'].lower() not in TIPOS_VALIDOS:
+        return {"error": "Tipo de incidente no permitido"}, 400
+
+    async def _save():
+        conn = await get_conn()
+        await conn.execute(
+            """INSERT INTO reportes_incidentes
+               (usuario_id, tipo_incidente, latitud, longitud, descripcion)
+               VALUES ($1,$2,$3,$4,$5)""",
+            data['usuario_id'], data['tipo_incidente'], data['latitud'],
+            data['longitud'], data['descripcion']
+        )
+        await conn.close()
+        return {"mensaje": "Incidente reportado correctamente"}
+    return asyncio.run(_save())
+
+@app.route('/reportes/<int:usuario_id>', methods=['GET'])
+def listar_reportes(usuario_id):
+    async def _get():
+        conn = await get_conn()
+        rep = await conn.fetch(
+            "SELECT * FROM reportes_incidentes WHERE usuario_id=$1 ORDER BY fecha DESC",
+            usuario_id
+        )
+        await conn.close()
+        return [dict(r) for r in rep]
+    return jsonify(asyncio.run(_get()))
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

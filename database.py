@@ -4,10 +4,10 @@ import pandas as pd
 import sys
 
 DB_CONFIG = {
-    "user": "bd_urbanguard_r2ew_user",
-    "password": "ZjKee2fBcsygKTYdIsyPzOUJzpFgZcsO",
-    "database": "bd_urbanguard_r2ew",
-    "host": "dpg-cvvg3n24d50c739bteo0-a.oregon-postgres.render.com"
+    "user": "urbanguard_user",
+    "password": "9MRt7buKSTjgrRN3rIpn7dSlaUtbtfwz",
+    "database": "urbanguard",
+    "host": "dpg-d0kh60nfte5s738mqpeg-a.oregon-postgres.render.com"
 }
 
 async def create_all_tables():
